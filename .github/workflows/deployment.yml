@@ -2,7 +2,9 @@ name: ref-logistics Deployment
 
 on:
   push:
-    branches: ['patch-1']
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   ssh-ec2:
