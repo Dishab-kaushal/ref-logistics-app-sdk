@@ -24,7 +24,7 @@ jobs:
           REF_HOST: ${{ secrets.REF_HOST }}
         run: |
           sshpass -p $REF_PASSWORD ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST << 'EOF'
-          if [ -d "ref-logistics-app-sdk" ]; then
+            if [ -d "ref-logistics-app-sdk" ]; then
             echo "Repository already exists, cleaning up"
             cd ./ref-logistics-app-sdk && git pull origin develop
           else
