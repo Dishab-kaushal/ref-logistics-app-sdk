@@ -14,9 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: SSH Setup and Cloning Repository
         run: |
-          sshpass -p $REF_PASSWORD ssh $REF_USER@$REF_HOST
+          sshpass -p $REF_PASSWORD ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST << 'EOF'
           if [ -d "ref-logistics-app-sdk" ]; then
             echo "Repository already exists, cleaning up"
             cd ./ref-logistics-app-sdk && git pull origin develop
@@ -28,8 +33,8 @@ jobs:
 
       - name: ref-logistics Deployment
         run: |
-          sshpass -p $REF_PASSWORD ssh $REF_USER@$REF_HOST
-          #cd ./ref-logistics-app-sdk
-          #cp ~/.env ~/ref-logistics-app-sdk/
+          sshpass -p $REF_PASSWORD ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST << 'EOF'
+          cd ./ref-logistics-app-sdk
           sudo docker-compose up -d --build
           EOF
+
