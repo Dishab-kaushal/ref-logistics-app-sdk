@@ -14,7 +14,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Install sshpass
+        run: sudo apt-get install -y sshpass
+
       - name: SSH Setup and Cloning Repository
+        env:
+          REF_PASSWORD: ${{ secrets.REF_PASSWORD }}
+          REF_USER: ${{ secrets.REF_USER }}
+          REF_HOST: ${{ secrets.REF_HOST }}
         run: |
           sshpass -p $REF_PASSWORD ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST << 'EOF'
           if [ -d "ref-logistics-app-sdk" ]; then
