@@ -1,0 +1,33 @@
+name: ref-logistics Deployment
+
+on:
+  push:
+    branches: ['patch-1']
+
+jobs:
+  ssh-ec2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: SSH Setup and Cloning Repository
+        run: |
+          sshpass -p $REF_PASSWORD ssh $REF_USER@$REF_HOST
+          if [ -d "ref-logistics-app-sdk" ]; then
+            echo "Repository already exists, cleaning up"
+            cd ./ref-logistics-app-sdk && git pull origin develop
+          else
+            echo "Cloning repository"
+            git clone -b patch-1 https://github.com/Dishab-kaushal/ref-logistics-app-sdk.git && cd ref-logistics-app-sdk && git submodule init && git submodule update --remote --recursive
+          fi
+          EOF
+
+      - name: ref-logistics Deployment
+        run: |
+          sshpass -p $REF_PASSWORD ssh $REF_USER@$REF_HOST
+          cd ./ref-logistics-app-sdk
+          cp ~/.env ~/ref-logistics-app-sdk/
+          sudo docker-compose up -d --build
+          EOF
