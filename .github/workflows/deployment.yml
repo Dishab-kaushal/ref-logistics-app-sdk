@@ -2,9 +2,7 @@ name: ref-logistics Deployment
 
 on:
   push:
-    branches: [ "develop" ]
-  pull_request:
-    branches: [ "develop" ]
+    branches: ['patch-1']
 
 jobs:
   ssh-ec2:
@@ -14,35 +12,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: SSH Setup and Cloning Repository
+      - name: Deploy to Server
         env:
-          SSHPASS: ${{ secrets.REF_PASSWORD }}
-          REF_USER: ${{ secrets.REF_USER }}
-          REF_HOST: ${{ secrets.REF_HOST }}
+          HOST: ${{ secrets.REF_HOST }}
+          USERNAME: ${{ secrets.REF_USER }}
+          PASSWORD: ${{ secrets.REF_PASSWORD }}
+        
         run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST <<EOF
+          # Install SSH client
+          sudo apt-get install -y openssh-client
+
+          # Clone or update repository
           if [ -d "ref-logistics-app-sdk" ]; then
             echo "Repository already exists, cleaning up"
-            cd ./ref-logistics-app-sdk && git pull origin develop
+            cd ./ref-logistics-app-sdk && git pull origin patch-1
           else
             echo "Cloning repository"
             git clone -b patch-1 https://github.com/Dishab-kaushal/ref-logistics-app-sdk.git && cd ref-logistics-app-sdk && git submodule init && git submodule update --remote --recursive
           fi
-          EOF
 
-      - name: ref-logistics Deployment
-        env:
-          SSHPASS: ${{ secrets.REF_PASSWORD }}
-          REF_USER: ${{ secrets.REF_USER }}
-          REF_HOST: ${{ secrets.REF_HOST }}
-        run: |
-          sshpass -e ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST <<EOF
+          # SSH to server and deploy
+          sshpass -p $PASSWORD ssh $USERNAME@$HOST << EOF
           cd ./ref-logistics-app-sdk
+          cp ~/.env ~/ref-logistics-app-sdk/
           sudo docker-compose up -d --build
           EOF
+
 
 
 
