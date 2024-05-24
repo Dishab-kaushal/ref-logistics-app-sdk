@@ -14,11 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: SSH Setup and Cloning Repository
         run: |
           sshpass -p $REF_PASSWORD ssh -o StrictHostKeyChecking=no $REF_USER@$REF_HOST << 'EOF'
