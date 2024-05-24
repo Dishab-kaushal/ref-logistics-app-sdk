@@ -27,7 +27,7 @@ jobs:
       - name: ref-logistics Deployment
         run: |
           sshpass -p $REF_PASSWORD ssh $REF_USER@$REF_HOST
-          cd ./ref-logistics-app-sdk
-          cp ~/.env ~/ref-logistics-app-sdk/
+          #cd ./ref-logistics-app-sdk
+          #cp ~/.env ~/ref-logistics-app-sdk/
           sudo docker-compose up -d --build
           EOF
