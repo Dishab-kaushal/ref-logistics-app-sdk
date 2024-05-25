@@ -21,7 +21,7 @@ jobs:
           SSH_PASSWORD: ${{ secrets.REF_PASSWORD }}
         run: |
           expect <<EOF
-          spawn ssh ${{ secrets.REF_HOST }}@${{ secrets.REF_HOST }} "mkdir -p /home/ec2-user/test"
+          spawn ssh ec2-user@13.234.207.112 "mkdir -p /home/ec2-user/test"
           expect "password:"
           send "${{ secrets.REF_PASSWORD }}\r"
           expect eof
