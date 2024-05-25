@@ -13,20 +13,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install expect
-        run: sudo apt-get install -y expect
 
-      - name: Deploy to server
-        env:
-          SSH_PASSWORD: ${{ secrets.REF_PASSWORD }}
-        run: |
-          ssh-keyscan 13.234.207.112  >> ~/.ssh/known_hosts
-          expect <<EOF
-          spawn ssh ec2-user@13.234.207.112 "mkdir -p /home/ec2-user/test"
-          expect "password:"
-          send "${{ secrets.REF_PASSWORD }}\r"
-          expect eof
-          EOF
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 13.234.207.112
+          username: ec2-user
+          password: ${{ secrets.REF_PASSWORD }}
+          port: 22
+          script: |
+            whoami
+            ls
+
+      # - name: Deploy to server
+      #   env:
+      #     SSH_PASSWORD: ${{ secrets.REF_PASSWORD }}
+      #   run: |
+      #     ssh-keyscan 13.234.207.112  >> ~/.ssh/known_hosts
+      #     expect <<EOF
+      #     spawn ssh ec2-user@13.234.207.112 "mkdir -p /home/ec2-user/test"
+      #     expect "password:"
+      #     send "${{ secrets.REF_PASSWORD }}\r"
+      #     expect eof
+      #     EOF
 
       # - name: Deploy to Server
       #   env:
